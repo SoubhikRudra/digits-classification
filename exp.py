@@ -32,8 +32,10 @@ from sklearn.model_selection import train_test_split
 # Note: if we were working from image files (e.g., 'png' files), we would load
 # them using :func:`matplotlib.pyplot.imread`.
 
+# 1 . Get the dataests
 digits = datasets.load_digits()
 
+#2 . Qualitative Sanity Check of the data 
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
 for ax, image, label in zip(axes, digits.images, digits.target):
     ax.set_axis_off()
@@ -55,21 +57,26 @@ for ax, image, label in zip(axes, digits.images, digits.target):
 # subsequently be used to predict the value of the digit for the samples
 # in the test subset.
 
+#3. Data Pre Processing
 # flatten the images
 n_samples = len(digits.images)
 data = digits.images.reshape((n_samples, -1))
 
-# Create a classifier: a support vector classifier
-clf = svm.SVC(gamma=0.001)
-
+#4 Data Splitting  - to Create train and Test data 
 # Split data into 50% train and 50% test subsets
 X_train, X_test, y_train, y_test = train_test_split(
     data, digits.target, test_size=0.5, shuffle=False
 )
 
+#5 Model Training 
+# Create a classifier: a support vector classifier
+clf = svm.SVC(gamma=0.001)
+
+
 # Learn the digits on the train subset
 clf.fit(X_train, y_train)
 
+# 6  Getting Model Prediction on test set
 # Predict the value of the digit on the test subset
 predicted = clf.predict(X_test)
 
@@ -77,6 +84,7 @@ predicted = clf.predict(X_test)
 # Below we visualize the first 4 test samples and show their predicted
 # digit value in the title.
 
+#7 Qualitative Sanity Check of the prediction
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
 for ax, image, prediction in zip(axes, X_test, predicted):
     ax.set_axis_off()
@@ -88,6 +96,7 @@ for ax, image, prediction in zip(axes, X_test, predicted):
 # :func:`~sklearn.metrics.classification_report` builds a text report showing
 # the main classification metrics.
 
+#8 Model Evaluation
 print(
     f"Classification report for classifier {clf}:\n"
     f"{metrics.classification_report(y_test, predicted)}\n"
