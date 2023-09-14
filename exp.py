@@ -15,8 +15,8 @@ hand-written digits, from 0-9.
 import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
-from sklearn import datasets, metrics, svm
-from sklearn.model_selection import train_test_split
+from sklearn import  metrics, svm
+from utils import preprocess_data, split_data, train_model, read_digits
 
 ###############################################################################
 # Digits dataset
@@ -33,72 +33,27 @@ from sklearn.model_selection import train_test_split
 # them using :func:`matplotlib.pyplot.imread`.
 
 # 1 . Get the dataests
-digits = datasets.load_digits()
+X, y = read_digits()
 
-#2 . Qualitative Sanity Check of the data 
-_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, label in zip(axes, digits.images, digits.target):
-    ax.set_axis_off()
-    ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
-    ax.set_title("Training: %i" % label)
+#3. Data Splitting
 
-###############################################################################
-# Classification
-# --------------
-#
-# To apply a classifier on this data, we need to flatten the images, turning
-# each 2-D array of grayscale values from shape ``(8, 8)`` into shape
-# ``(64,)``. Subsequently, the entire dataset will be of shape
-# ``(n_samples, n_features)``, where ``n_samples`` is the number of images and
-# ``n_features`` is the total number of pixels in each image.
-#
-# We can then split the data into train and test subsets and fit a support
-# vector classifier on the train samples. The fitted classifier can
-# subsequently be used to predict the value of the digit for the samples
-# in the test subset.
+X_train, X_test, y_train, y_test = split_data(X,y, test_size=0.3)
 
-#3. Data Pre Processing
-# flatten the images
-n_samples = len(digits.images)
-data = digits.images.reshape((n_samples, -1))
-
-#4 Data Splitting  - to Create train and Test data 
-# Split data into 50% train and 50% test subsets
-X_train, X_test, y_train, y_test = train_test_split(
-    data, digits.target, test_size=0.5, shuffle=False
-)
+#4. Data Preprocessing
+#data = preprocess_data(data)
+X_train = preprocess_data(X_train)
+X_test = preprocess_data(X_test)
 
 #5 Model Training 
-# Create a classifier: a support vector classifier
-clf = svm.SVC(gamma=0.001)
-
-
-# Learn the digits on the train subset
-clf.fit(X_train, y_train)
+model  = train_model(X_train, y_train, {'gamma': 0.001}, model_type="svm")
 
 # 6  Getting Model Prediction on test set
 # Predict the value of the digit on the test subset
-predicted = clf.predict(X_test)
-
-###############################################################################
-# Below we visualize the first 4 test samples and show their predicted
-# digit value in the title.
-
-#7 Qualitative Sanity Check of the prediction
-_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, prediction in zip(axes, X_test, predicted):
-    ax.set_axis_off()
-    image = image.reshape(8, 8)
-    ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
-    ax.set_title(f"Prediction: {prediction}")
-
-###############################################################################
-# :func:`~sklearn.metrics.classification_report` builds a text report showing
-# the main classification metrics.
+predicted = model.predict(X_test)
 
 #8 Model Evaluation
 print(
-    f"Classification report for classifier {clf}:\n"
+    f"Classification report for classifier {model}:\n"
     f"{metrics.classification_report(y_test, predicted)}\n"
 )
 
@@ -110,14 +65,7 @@ disp = metrics.ConfusionMatrixDisplay.from_predictions(y_test, predicted)
 disp.figure_.suptitle("Confusion Matrix")
 print(f"Confusion matrix:\n{disp.confusion_matrix}")
 
-plt.show()
-
-###############################################################################
-# If the results from evaluating a classifier are stored in the form of a
-# :ref:`confusion matrix <confusion_matrix>` and not in terms of `y_true` and
-# `y_pred`, one can still build a :func:`~sklearn.metrics.classification_report`
-# as follows:
-
+# plt.show()
 
 # The ground truth and predicted lists
 y_true = []
