@@ -52,6 +52,7 @@ model  = train_model(X_train, y_train, {'gamma': 0.001}, model_type="svm")
 # 6  Getting Model Prediction on test set
 # Predict the value of the digit on the test subset
 #predicted = model.predict(X_test)
+# Assignment 2
 predicted = predict_and_eval(model, X_test, y_test)
 
 #8 Model Evaluation
