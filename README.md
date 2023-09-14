@@ -27,3 +27,19 @@ Meaning of Failure  :
 
 Feature : 
     Vary Model Hyper Parameter
+
+
+e.g. 100 samples  : 2-class/binary  classification: image of carrot or turnip
+    50 samples  : Carrots
+    50 samples  : Turinp
+        Data Distribution  : Balanced/Uniform
+    
+    x amount of data for training
+    n-x amount of data for testing  
+
+    Calculate some eval metric(train model(70 samples in training  - 36 carrot and 35 turnip ) , 30 samples in testing 15,15) ==performance
+
+In Practice : 
+    Train - Training the model   (Model Type, Hyper parameters, interations)
+    Development/Validation  - Selecting the model 
+    Testreporting the performance
