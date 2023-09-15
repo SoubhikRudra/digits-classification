@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 # Import datasets, classifiers and performance metrics
 from sklearn import  metrics, svm
 from utils import preprocess_data, split_data, train_model, read_digits, split_train_dev_test, predict_and_eval
+gamma_ranges = [0.001, 0.01, 0.1, 1, 10, 100]
+c_ranges = [0.1, 1, 2, 5, 10]
 
 ###############################################################################
 # Digits dataset
@@ -46,44 +48,62 @@ X_train = preprocess_data(X_train)
 X_test = preprocess_data(X_test)
 X_dev = preprocess_data(X_dev)
 
+# Hyperparameter Tuning 
+#   - Take all combinations of Gamma and C 
+best_acc_so_far = -1
+best_model = None
+for cur_gamma in gamma_ranges:
+    for cur_c in c_ranges:
+    #- train the model with each parameter 
+    #5 Model Training
+        cur_model  = train_model(X_train, y_train, {'gamma': cur_gamma, 'C': cur_c}, model_type="svm")
+    #- get some performance metrics on Dev Set 
+        cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
+    #- Select the Hyper parameters that yields the best performance on Dev sets 
+        if cur_accuracy > best_acc_so_far:
+            print("New Best Accuracy is :", cur_accuracy)
+            best_acc_so_far = cur_accuracy
+            optimal_gamma = cur_gamma
+            optimal_c = cur_c
+            best_model = cur_model
+print("Optimal Parameters gamma :", optimal_gamma , "C :", optimal_c)
+
 #5 Model Training 
-model  = train_model(X_train, y_train, {'gamma': 0.001}, model_type="svm")
+# model  = train_model(X_train, y_train, {'gamma': optimal_gamma, 'C': optimal_c}, model_type="svm")
 
 # 6  Getting Model Prediction on test set
-# Predict the value of the digit on the test subset
-#predicted = model.predict(X_test)
-# Assignment 2
-predicted = predict_and_eval(model, X_test, y_test)
+# 7  Qualitative Sanity check on the prediction 
+# 8  Model Evaluation
+test_accuracy = predict_and_eval(best_model, X_test, y_test)
+print("Test Accuracy:",test_accuracy)
+# print(
+#     f"Classification report for classifier {model}:\n"
+#     f"{metrics.classification_report(y_test, predicted)}\n"
+# )
 
-#8 Model Evaluation
-print(
-    f"Classification report for classifier {model}:\n"
-    f"{metrics.classification_report(y_test, predicted)}\n"
-)
+# ###############################################################################
+# # We can also plot a :ref:`confusion matrix <confusion_matrix>` of the
+# # true digit values and the predicted digit values.
 
-###############################################################################
-# We can also plot a :ref:`confusion matrix <confusion_matrix>` of the
-# true digit values and the predicted digit values.
+# disp = metrics.ConfusionMatrixDisplay.from_predictions(y_test, predicted)
+# disp.figure_.suptitle("Confusion Matrix")
+# print(f"Confusion matrix:\n{disp.confusion_matrix}")
 
-disp = metrics.ConfusionMatrixDisplay.from_predictions(y_test, predicted)
-disp.figure_.suptitle("Confusion Matrix")
-print(f"Confusion matrix:\n{disp.confusion_matrix}")
+# # plt.show()
 
-# plt.show()
+# # The ground truth and predicted lists
+# y_true = []
+# y_pred = []
+# cm = disp.confusion_matrix
 
-# The ground truth and predicted lists
-y_true = []
-y_pred = []
-cm = disp.confusion_matrix
+# # For each cell in the confusion matrix, add the corresponding ground truths
+# # and predictions to the lists
+# for gt in range(len(cm)):
+#     for pred in range(len(cm)):
+#         y_true += [gt] * cm[gt][pred]
+#         y_pred += [pred] * cm[gt][pred]
 
-# For each cell in the confusion matrix, add the corresponding ground truths
-# and predictions to the lists
-for gt in range(len(cm)):
-    for pred in range(len(cm)):
-        y_true += [gt] * cm[gt][pred]
-        y_pred += [pred] * cm[gt][pred]
-
-print(
-    "Classification report rebuilt from confusion matrix:\n"
-    f"{metrics.classification_report(y_true, y_pred)}\n"
-)
+# print(
+#     "Classification report rebuilt from confusion matrix:\n"
+#     f"{metrics.classification_report(y_true, y_pred)}\n"
+# )
