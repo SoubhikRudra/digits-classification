@@ -1,4 +1,4 @@
-from sklearn import  svm, datasets
+from sklearn import  svm, datasets, metrics
 from sklearn.model_selection import train_test_split
 # Put the Utils here 
 def read_digits():
@@ -34,12 +34,12 @@ def train_model(x,y, model_params, model_type="svm"):
 def split_train_dev_test(X, y, test_size, dev_size, random_state=1):
     # First, split data into training and temporary test subsets
     X_train_dev, X_test, y_train_dev, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
+        X, y, test_size=test_size, random_state=1
     )
     
     # Next, split the remaining data (X_train_dev, y_train_dev) into training and development subsets
     X_train, X_dev, y_train, y_dev = train_test_split(
-        X_train_dev, y_train_dev, test_size=dev_size, random_state=random_state
+        X_train_dev, y_train_dev, test_size=(1-test_size), random_state=1
     )
     
     return X_train, X_dev, X_test, y_train, y_dev, y_test
@@ -49,4 +49,4 @@ def predict_and_eval(model, X_test, y_test):
     predicted = model.predict(X_test)
 
     # Quantitative sanity check
-    return predicted
+    return metrics.accuracy_score(y_test, predicted)
