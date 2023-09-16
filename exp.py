@@ -10,15 +10,15 @@ hand-written digits, from 0-9.
 
 # Author: Gael Varoquaux <gael dot varoquaux at normalesup dot org>
 # License: BSD 3 clause
-
+import itertools
 # Standard scientific Python imports
 import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
 from sklearn import  metrics, svm
-from utils import preprocess_data, split_data, train_model, read_digits, split_train_dev_test, predict_and_eval
-gamma_ranges = [0.001, 0.01, 0.1, 1, 10, 100]
-c_ranges = [0.1, 1, 2, 5, 10]
+from utils import preprocess_data, split_data, train_model, read_digits, split_train_dev_test, predict_and_eval, tune_hyperparameters
+dev_sizes = [0.1, 0.2, 0.3]
+test_sizes = [0.1, 0.2, 0.3]
 
 ###############################################################################
 # Digits dataset
@@ -37,36 +37,75 @@ c_ranges = [0.1, 1, 2, 5, 10]
 # 1 . Get the dataests
 X, y = read_digits()
 
+# Create combinations using itertools.product
+dev_test_combinations = [{'test_size': test, 'dev_size': dev} for test, dev in itertools.product(test_sizes, dev_sizes)]
 #3. Data Splitting
 
 #X_train, X_test, y_train, y_test = split_data(X,y, test_size=0.3)
-X_train, X_dev, X_test, y_train, y_dev, y_test = split_train_dev_test(X, y, test_size=0.3, dev_size=0.3)
+# X_train, X_dev, X_test, y_train, y_dev, y_test = split_train_dev_test(X, y, test_size=0.3, dev_size=0.3)
 
-#4. Data Preprocessing
-#data = preprocess_data(data)
-X_train = preprocess_data(X_train)
-X_test = preprocess_data(X_test)
-X_dev = preprocess_data(X_dev)
+# #4. Data Preprocessing
+# #data = preprocess_data(data)
+# X_train = preprocess_data(X_train)
+# X_test = preprocess_data(X_test)
+# X_dev = preprocess_data(X_dev)
 
 # Hyperparameter Tuning 
+# Assignment 3
+for dev_test in dev_test_combinations:
+    test_size = dev_test['test_size']
+    dev_size = dev_test['dev_size']
+    train_size = 1 - (dev_size+test_size)
+
+    X_train, X_dev, X_test, y_train, y_dev, y_test = split_train_dev_test(X, y, test_size=0.2, dev_size=0.25)
+
+    #3. Data preprocessing 
+    X_train = preprocess_data(X_train)
+    X_test = preprocess_data(X_test)
+    X_dev = preprocess_data(X_dev)
+
+    gamma_range = [0.001, 0.01, 0.1, 1.0, 10]
+    C_range = [0.1, 1.0, 2, 5, 10]
+
+    # Generate a list of dictionaries representing all combinations
+    # param_combinations = [{'gamma': gamma, 'C': C} for gamma, C in itertools.product(gamma_range, C_range)]
+    param_combinations = [{'gamma': gamma, 'C': C} for gamma in gamma_range for C in C_range]
+
+    # Hyperparameter tuning 
+    train_acc, best_hparams, best_model, best_accuracy = tune_hyperparameters(X_train, y_train, X_dev, y_dev, param_combinations)
+
+    # Train the data
+    result = train_model(X_train, y_train, {'gamma': 0.001}, model_type='svm')
+
+    # Accuracy Evaluation
+    accuracy_test = predict_and_eval(result,X_test, y_test)
+
+    # print("Accuracy on Test Set:", accuracy_test)
+    # print("Classification Report on Test Set:\n", classification_rep_test)
+    # print("Confusion Matrix on Test Set:\n", confusion_mat_test)
+
+    # Print all combinations 
+    print(f'test_size={test_size}, dev_size={dev_size}, train_size={train_size}, train_acc:{train_acc} dev_acc:{best_accuracy} test_acc: {accuracy_test}')
+    print(f' Best params:{best_hparams}')
+# Class work - 09.02.23
 #   - Take all combinations of Gamma and C 
-best_acc_so_far = -1
-best_model = None
-for cur_gamma in gamma_ranges:
-    for cur_c in c_ranges:
-    #- train the model with each parameter 
-    #5 Model Training
-        cur_model  = train_model(X_train, y_train, {'gamma': cur_gamma, 'C': cur_c}, model_type="svm")
-    #- get some performance metrics on Dev Set 
-        cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
-    #- Select the Hyper parameters that yields the best performance on Dev sets 
-        if cur_accuracy > best_acc_so_far:
-            print("New Best Accuracy is :", cur_accuracy)
-            best_acc_so_far = cur_accuracy
-            optimal_gamma = cur_gamma
-            optimal_c = cur_c
-            best_model = cur_model
-print("Optimal Parameters gamma :", optimal_gamma , "C :", optimal_c)
+# best_acc_so_far = -1
+# best_model = None
+# for cur_gamma in gamma_ranges:
+#     for cur_c in c_ranges:
+#     #- train the model with each parameter 
+#     #5 Model Training
+#         cur_model  = train_model(X_train, y_train, {'gamma': cur_gamma, 'C': cur_c}, model_type="svm")
+#     #- get some performance metrics on Dev Set 
+#         cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
+#     #- Select the Hyper parameters that yields the best performance on Dev sets 
+#         if cur_accuracy > best_acc_so_far:
+#             print("New Best Accuracy is :", cur_accuracy)
+#             best_acc_so_far = cur_accuracy
+#             optimal_gamma = cur_gamma
+#             optimal_c = cur_c
+#             best_model = cur_model
+# print("Optimal Parameters gamma :", optimal_gamma , "C :", optimal_c)
 
 #5 Model Training 
 # model  = train_model(X_train, y_train, {'gamma': optimal_gamma, 'C': optimal_c}, model_type="svm")
@@ -74,8 +113,9 @@ print("Optimal Parameters gamma :", optimal_gamma , "C :", optimal_c)
 # 6  Getting Model Prediction on test set
 # 7  Qualitative Sanity check on the prediction 
 # 8  Model Evaluation
-test_accuracy = predict_and_eval(best_model, X_test, y_test)
-print("Test Accuracy:",test_accuracy)
+# Class 4
+# test_accuracy = predict_and_eval(best_model, X_test, y_test)
+# print("Test Accuracy:",test_accuracy)
 # print(
 #     f"Classification report for classifier {model}:\n"
 #     f"{metrics.classification_report(y_test, predicted)}\n"
