@@ -68,3 +68,6 @@ def tune_hyperparameters(X_train, y_train, X_dev, y_dev, hyperparameter_combinat
             best_dev_accuracy = dev_accuracy
     
     return train_accuracy, best_hyperparameters, best_model, best_dev_accuracy
+
+def create_hparam_combo(gamma_range, C_range):
+    return [{'gamma': gamma, 'C': C} for gamma in gamma_range for C in C_range]
