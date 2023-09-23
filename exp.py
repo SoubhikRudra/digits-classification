@@ -50,6 +50,17 @@ dev_test_combinations = [{'test_size': test, 'dev_size': dev} for test, dev in i
 # X_test = preprocess_data(X_test)
 # X_dev = preprocess_data(X_dev)
 
+# Quiz 1 - 23rd Sep, 2023
+tot_sample = len(X)
+print(f'No of total samples in the dataset: {tot_sample}')
+
+# Size (height and width) of the images in dataset
+if tot_sample > 0:
+    height, width = X[0].shape
+    print(f'Size (height x width) of the images in the dataset: {height} x {width}')
+    
+
+
 # Hyperparameter Tuning 
 # Assignment 3
 for dev_test in dev_test_combinations:
@@ -84,9 +95,10 @@ for dev_test in dev_test_combinations:
     # print("Classification Report on Test Set:\n", classification_rep_test)
     # print("Confusion Matrix on Test Set:\n", confusion_mat_test)
 
+
     # Print all combinations 
-    print(f'test_size={test_size}, dev_size={dev_size}, train_size={train_size}, train_acc:{train_acc} dev_acc:{best_accuracy} test_acc: {accuracy_test}')
-    print(f' Best params:{best_hparams}')
+    # print(f'test_size={test_size}, dev_size={dev_size}, train_size={train_size}, train_acc:{train_acc} dev_acc:{best_accuracy} test_acc: {accuracy_test}')
+    # print(f' Best params:{best_hparams}')
 # Class work - 09.02.23
 #   - Take all combinations of Gamma and C 
 # best_acc_so_far = -1
