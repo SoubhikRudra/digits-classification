@@ -5,7 +5,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the trained model
-model_path = '/home/suryakantak/hand-written/app/model/model.pkl'
+model_path = '/home/soubhikr/mlops/digits-classification/model.pkl'
 try:
     trained_model = joblib.load(model_path)
     print("Model loaded successfully.")

@@ -5,8 +5,6 @@ from utils import hyperparameter_tuning, prepare_data_splits
 
 import os
 
-#os.makedirs('/home/suryakantak/hand-written/app/model/')
-#print(directory)
 
 
 def main():
@@ -40,7 +38,7 @@ def main():
         print("Model training complete for test_frac={}, dev_frac={}".format(test_frac, dev_frac))
 
     # Save the trained model (outside the loop)
-    model_path = '/home/suryakantak/hand-written/app/model/model.pkl'
+    model_path = '/home/soubhikr/mlops/digits-classification/model.pkl'
     joblib.dump(trained_model, model_path)
 
 if __name__ == "__main__":
