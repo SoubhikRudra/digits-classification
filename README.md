@@ -1,45 +1,9 @@
-System Requirement :
-    OS
-    H/W -- May be skipped
+#SVM We can deploy this code in docker container and Azure web app.
 
-How to Set up  : 
-    install conda
+This code getting deployed successfully in docker container.
 
-    conda create -n digit python=3.9
-    conda deactivate
-    conda activate digit
-    pip install -r requirements.txt
+curl https://webapp-m22aie206.azurewebsites.net/predict -X POST -H 'Content-Type: application/json' -d '{"image1": ["0.0","0.0","0.0","11.999999999999982","13.000000000000004","5.000000000000021","8.881784197001265e-15","0.0","0.0","0.0","0.0","10.999999999999986","15.999999999999988","9.000000000000005","1.598721155460224e-14","0.0","0.0","0.0","2.9999999999999925","14.999999999999979","15.999999999999998","6.000000000000022","1.0658141036401509e-14","0.0","6.217248937900871e-15","6.999999999999987","14.99999999999998","15.999999999999996","16.0","2.0000000000000284","3.552713678800507e-15","0.0","5.5220263365470826e-30","6.21724893790087e-15","1.0000000000000113","15.99999999999998","16.0","3.000000000000022","5.32907051820075e-15","0.0","0.0","0.0","0.9999999999999989","15.99999999999998","16.0","6.000000000000015","1.0658141036401498e-14","0.0","0.0","0.0","0.9999999999999989","15.99999999999998","16.0","6.000000000000018","1.0658141036401503e-14","0.0","0.0","0.0","0.0","10.999999999999986","15.999999999999993","10.00000000000001","1.7763568394002505e-14","0.0"],"image2": ["0.0","0.0","0.0","11.999999999999982","13.000000000000004","5.000000000000021","8.881784197001265e-15","0.0","0.0","0.0","0.0","10.999999999999986","15.999999999999988","9.000000000000005","1.598721155460224e-14","0.0","0.0","0.0","2.9999999999999925","14.999999999999979","15.999999999999998","6.000000000000022","1.0658141036401509e-14","0.0","6.217248937900871e-15","6.999999999999987","14.99999999999998","15.999999999999996","16.0","2.0000000000000284","3.552713678800507e-15","0.0","5.5220263365470826e-30","6.21724893790087e-15","1.0000000000000113","15.99999999999998","16.0","3.000000000000022","5.32907051820075e-15","0.0","0.0","0.0","0.9999999999999989","15.99999999999998","16.0","6.000000000000015","1.0658141036401498e-14","0.0","0.0","0.0","0.9999999999999989","15.99999999999998","16.0","6.000000000000018","1.0658141036401503e-14","0.0","0.0","0.0","0.0","10.999999999999986","15.999999999999993","10.00000000000001","1.7763568394002505e-14","0.0"]}'
 
-How to Run :  
-    python exp.py
+Sample output
 
-Places of Randomness :
-    1. Creating the Split 
-        - Freezing the data (Shuffle while splitting the test and train data)
-    1.5 -- Data order (Learning is iterative)
-    2. Model 
-        - Weight Initialization 
-
-Meaning of Failure  :
-    Poor Performance Metrics
-    Coding Runtime/compile Error 
-    The model provided bad prediction on new test samples
-
-Feature : 
-    Vary Model Hyper Parameter
-
-
-e.g. 100 samples  : 2-class/binary  classification: image of carrot or turnip
-    50 samples  : Carrots
-    50 samples  : Turinp
-        Data Distribution  : Balanced/Uniform
-    
-    x amount of data for training
-    n-x amount of data for testing  
-
-    Calculate some eval metric(train model(70 samples in training  - 36 carrot and 35 turnip ) , 30 samples in testing 15,15) ==performance
-
-In Practice : 
-    Train - Training the model   (Model Type, Hyper parameters, interations)
-    Development/Validation  - Selecting the model 
-    Testreporting the performance
+{ "result": "Same" }
