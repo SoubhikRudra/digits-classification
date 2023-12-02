@@ -74,5 +74,5 @@ jobs:
       - name: Run Tests
         run: |
           echo "🔍 ANSWERS OF [Q3]"
-          cd API
+          cd FLASK_API
           pytest -s
