@@ -1,63 +1,99 @@
+import itertools
 from sklearn.model_selection import train_test_split
-from sklearn import svm, datasets, metrics
-# we will put all utils here
+from sklearn import svm, metrics
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import Normalizer
 
 
+def prepare_data_splits(data, labels, test_fraction, dev_fraction):
+    X_train_dev, X_test, Y_train_dev, Y_test = train_test_split(
+        data, labels, test_size=test_fraction, shuffle=True
+    )
+    X_train, X_dev, Y_train, Y_dev = train_test_split(
+        X_train_dev, Y_train_dev, test_size=dev_fraction, shuffle=True
+    )
+    return X_train, Y_train, X_dev, Y_dev, X_test, Y_test
 
+def hyperparameter_tuning(X_train, Y_train, X_dev, Y_dev, param_combinations):
+    best_accuracy = -1
+    best_train_accuracy = -1
+    best_model = None
+    best_gamma = None
+    best_C = None
+
+    for gamma, C in param_combinations:
+        model = svm.SVC(C=C, gamma=gamma)
+        model.fit(X_train, Y_train)
+
+        predicted_dev = model.predict(X_dev)
+        current_accuracy = metrics.accuracy_score(y_pred=predicted_dev, y_true=Y_dev)
+
+        predicted_train = model.predict(X_train)
+        train_accuracy = metrics.accuracy_score(y_pred=predicted_train, y_true=Y_train)
+
+        if current_accuracy > best_accuracy:
+            best_accuracy = current_accuracy
+            best_train_accuracy = train_accuracy
+            best_model = model
+            best_gamma = gamma
+            best_C = C
+
+    return best_model, best_gamma, best_C, best_accuracy, best_train_accuracy
+
+# Read digits
 def read_digits():
     digits = datasets.load_digits()
-    X = digits.images
+    x = digits.images
     y = digits.target
-    return X, y 
+    return x, y
 
+#utils :
 def preprocess_data(data):
-    # flatten the images
     n_samples = len(data)
     data = data.reshape((n_samples, -1))
+    print(f"Q1: Unit Normalization")
     return data
 
-# Split data into 50% train and 50% test subsets
-def split_data(x, y, test_size, random_state=1):
-    X_train, X_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.5,random_state=random_state
+#Split -training, development, and test subsets
+def split_train_dev_test(X, y, test_size, dev_size, random_state=1):
+    # First, split data into training and temporary test subsets
+    X_train_dev, X_test, y_train_dev, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state
     )
-    return X_train, X_test, y_train, y_test
+    
+    # Split  data (X_train_dev, y_train_dev) into training and development subsets
+    X_train, X_dev, y_train, y_dev = train_test_split(
+        X_train_dev, y_train_dev, test_size=dev_size, random_state=random_state
+    )
+    
+    return X_train, X_dev, X_test, y_train, y_dev, y_test
 
-# train the model of choice with the model prameter
-def train_model(x, y, model_params, model_type="svm"):
-    if model_type == "svm":
-        # Create a classifier: a support vector classifier
-        clf = svm.SVC
-    model = clf(**model_params)
-    # train the model
-    model.fit(x, y)
-    return model
+# SVM Classifier
+def train_model(X, y, model_params, model_type='svm'):
+    if model_type == 'svm':
+        clf = svm.SVC(**model_params)
+    clf.fit(X, y)
+    return clf
 
-
-def train_test_dev_split(X, y, test_size, dev_size):
-    X_train_dev, X_test, Y_train_Dev, y_test =  train_test_split(X, y, test_size=test_size, random_state=1)
-    X_train, X_dev, y_train, y_dev = split_data(X_train_dev, Y_train_Dev, dev_size/(1-test_size), random_state=1)
-    return X_train, X_test, X_dev, y_train, y_test, y_dev
-
-# Question 2:
+# Predict & evaluate Model
 def predict_and_eval(model, X_test, y_test):
-    predicted = model.predict(X_test)    
-    return metrics.accuracy_score(y_test, predicted)
+    # Predict  value of  digit on  testdata  subset
+    predicted = model.predict(X_test)
 
-def tune_hyper_parameters(train_features, train_labels, dev_features, dev_labels, param_combinations):
-    highest_accuracy = -1
-    best_model = None
-    optimal_gamma_value = None
-    optimal_c_value = None
+    # sanity check
+    return predicted
 
-    for param_set in param_combinations:
-        current_model = train_model(train_features, train_labels, {'gamma': 0.001, 'C': param_set["c_range"]}, model_type="svm")
-        current_accuracy = predict_and_eval(current_model, dev_features, dev_labels)
-
-        if current_accuracy > highest_accuracy:
-            highest_accuracy = current_accuracy
-            optimal_gamma_value = param_set["gamma"]
-            optimal_c_value = param_set["c_range"]
-            best_model = current_model
-            
-    return best_model, highest_accuracy, optimal_gamma_value, optimal_c_value
+# Functions - Hyperparameter tuning
+def tune_hparams(X, y, X_dev, y_dev, param_grid, model_type='svm'):
+    if model_type == 'svm':
+        clf = svm.SVC()
+    
+    grid_search = GridSearchCV(clf, param_grid, cv=3)
+    grid_search.fit(X, y)
+    
+    best_hparams = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    best_accuracy = grid_search.best_score_
+    
+    return best_hparams, best_model, best_accuracy
