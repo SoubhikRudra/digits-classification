@@ -18,11 +18,11 @@ def compare_images(image1, image2):
     image1_array = np.array(image1, dtype=float)
     image2_array = np.array(image2, dtype=float)
 
-    # Flatten the arrays to 1D
+    # Flatten  arrays into 1D
     image1_array = image1_array.flatten()
     image2_array = image2_array.flatten()
 
-    # Use the trained model to predict if the images are the same or different
+    # Use trained model to predict if the images 
     prediction = trained_model.predict([image1_array, image2_array])
 
     return prediction[0]
@@ -53,4 +53,3 @@ def home():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8081)#, #debug=True)
-    
