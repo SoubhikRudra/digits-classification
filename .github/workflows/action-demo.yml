@@ -68,7 +68,7 @@ jobs:
       - name: Run Tests
         run: |
           echo "🔍 Q1 and Q2 - Normalization and Solver"
-          cd Final_Exam
+          cd Major_Exam
           python logistic_regression_experiment.py
   
       - name: Run Tests
