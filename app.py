@@ -6,6 +6,7 @@ from io import BytesIO
 model = joblib.load('best_model.pkl')
 
 app = Flask(__name__)
+#test
 
 @app.route('/predict_digit', methods=['POST'])
 def predict_digit():
