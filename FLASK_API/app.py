@@ -7,7 +7,7 @@ import os
 
 # Load the model
 model = joblib.load('best_model.pkl')
-SAVED_MODEL_DIR = "saved_model"
+SAVED_MODEL_DIR = "../saved_model"
 app = Flask(__name__)
 
 from sklearn.preprocessing import Normalizer
