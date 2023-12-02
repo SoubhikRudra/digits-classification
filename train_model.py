@@ -3,7 +3,7 @@ import itertools
 import joblib
 import os
 import numpy as np
-from utils import hyperparameter_tuning, prepare_data_splits
+from Major_Exam.utils import hyperparameter_tuning, prepare_data_splits
 
 def main():
     # Load  dataset
@@ -32,7 +32,7 @@ def main():
         std_score = np.std(cv_scores)
         print(f"Solver: {solver}, Mean Accuracy: {mean_score}, Std Accuracy: {std_score}")
 
-        # Train the model t
+        # Train the model 
         model.fit(X_data_normalized, y_data)
 
         # Save the model
