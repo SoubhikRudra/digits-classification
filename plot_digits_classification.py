@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
 from sklearn import  metrics, svm
-from utils import preprocess_data, split_data, train_model, read_digits, split_train_dev_test, predict_and_eval, tune_hyperparameters
+from Major_Exam.utils import preprocess_data, split_data, train_model, read_digits, split_train_dev_test, predict_and_eval, tune_hyperparameters
 dev_sizes = [0.1, 0.2, 0.3]
 test_sizes = [0.1, 0.2, 0.3]
 

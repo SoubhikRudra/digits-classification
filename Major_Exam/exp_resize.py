@@ -9,7 +9,7 @@ hand-written digits, from 0-9.
 import cv2
 import numpy as np
 
-from utils import preprocess_data, read_digits, predict_and_eval, train_test_dev_split, tune_hyper_parameters
+from Major_Exam.utils import preprocess_data, read_digits, predict_and_eval, train_test_dev_split, tune_hyper_parameters
 gamma_ranges = [0.001, 0.01, 0.1, 1, 10, 100]
 
 C_ranges = [0.1, 1, 2, 5, 10]
